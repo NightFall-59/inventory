@@ -1,10 +1,11 @@
+import { useState } from 'react'
 import { Alert, Button, Form, Input } from 'antd'
 import Brand from '../components/Brand'
 import type { Navigate } from '../types'
 
 interface Props {
   go: Navigate
-  onSignIn: (email: string, password: string) => Promise<void>
+  onSignIn: (email: string, password: string) => Promise<'signedIn' | 'invalid' | 'error'>
 }
 
 interface LoginValues {
@@ -13,18 +14,27 @@ interface LoginValues {
 }
 
 export default function LoginScreen({ go, onSignIn }: Props) {
+  const [signInFailed, setSignInFailed] = useState(false)
+
   return (
     <div className="screen">
       <div className="auth-card">
-        <Alert
-          message="Account not signed in"
-          description="Sign in to access your inventory."
-          type="warning"
-          showIcon
-          style={{ marginBottom: 16 }}
-        />
+        {signInFailed && (
+          <Alert
+            message="Account not signed in"
+            description="Email or password is incorrect."
+            type="warning"
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )}
         <Brand />
-        <Form<LoginValues> layout="vertical" style={{ marginTop: 16 }} onFinish={({ email, password }) => onSignIn(email, password)}>
+        <Form<LoginValues>
+          layout="vertical"
+          style={{ marginTop: 16 }}
+          onValuesChange={() => setSignInFailed(false)}
+          onFinish={async ({ email, password }) => setSignInFailed(await onSignIn(email, password) === 'invalid')}
+        >
           <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email', message: 'Enter a valid email' }]}>
             <Input />
           </Form.Item>

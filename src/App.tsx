@@ -64,8 +64,7 @@ export default function App() {
     try {
       const accountEmail = await checkCredentials(email, password)
       if (!accountEmail) {
-        messageApi.error('Email or password is incorrect.')
-        return
+        return 'invalid' as const
       }
 
       const accountProducts = loadAccountProducts(accountEmail)
@@ -75,8 +74,10 @@ export default function App() {
       setUser((currentUser) => ({ ...currentUser, name: accountEmail.split('@')[0] }))
       setScreen('dashboard')
       messageApi.success('Signed in')
+      return 'signedIn' as const
     } catch (error) {
       messageApi.error(error instanceof Error ? error.message : 'Could not sign in. Please try again.')
+      return 'error' as const
     }
   }
 

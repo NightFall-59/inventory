@@ -31,7 +31,7 @@ export default function InventoryScreen({ products, go }: Props) {
         />
         <Typography.Text type="secondary">All products</Typography.Text>
         {list.length
-          ? list.map((p) => <ProductRow key={p.id} product={p} onClick={(id) => go('details', id)} />)
+          ? <div className="inventory-list">{list.map((p) => <ProductRow key={p.id} product={p} onClick={(id) => go('details', id)} />)}</div>
           : <Typography.Text type="secondary" style={{ padding: 12 }}>No products match your search.</Typography.Text>}
       </div>
       <BottomNav active="inventory" go={go} />

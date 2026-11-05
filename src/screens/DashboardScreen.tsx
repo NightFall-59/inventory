@@ -24,36 +24,44 @@ export default function DashboardScreen({ products, go }: Props) {
   return (
     <>
       <div className="screen">
-        <Typography.Title level={5} style={{ textAlign: 'center' }}>Inventory Manager</Typography.Title>
-        <Input
-          prefix={<SearchOutlined />}
-          placeholder="Search products"
-          allowClear
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <div className="dashboard-header">
+          <Typography.Title level={4} style={{ textAlign: 'center', margin: 0 }}>Inventory Manager</Typography.Title>
+          <Input
+            prefix={<SearchOutlined />}
+            placeholder="Search products"
+            allowClear
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
         {search ? (
-          <>
+          <div className="dashboard-search-results">
             <Typography.Text type="secondary" style={{ display: 'block', marginTop: 12 }}>Search results</Typography.Text>
             {matches.length
               ? matches.map((p) => <ProductRow key={p.id} product={p} onClick={open} />)
               : <Typography.Text type="secondary" style={{ display: 'block', padding: 12 }}>No products match your search.</Typography.Text>}
-          </>
+          </div>
         ) : (
           <>
-            <div className="grid2" style={{ marginTop: 12 }}>
+            <div className="grid2 dashboard-stats">
               <StatCard label="Total stock" value={total.toLocaleString()} note={`${products.length} products`} />
               <StatCard label="Low stock" value={low.length} />
             </div>
-            <div className="row" style={{ marginTop: 18 }}>
-              <Typography.Title level={5} style={{ margin: 0 }}>Low stock alerts</Typography.Title>
-              <Button type="link" size="small" onClick={() => go('inventory')}>View all</Button>
+            <div className="dashboard-panels">
+              <section className="dashboard-panel">
+                <div className="row">
+                  <Typography.Title level={5} style={{ margin: 0 }}>Low stock alerts</Typography.Title>
+                  <Button type="link" size="small" onClick={() => go('inventory')}>View all</Button>
+                </div>
+                {low.length
+                  ? low.map((p) => <ProductRow key={p.id} product={p} onClick={open} />)
+                  : <Typography.Text type="secondary">Nothing is running low.</Typography.Text>}
+              </section>
+              <section className="dashboard-panel">
+                <Typography.Title level={5} style={{ margin: 0 }}>Recent inventory</Typography.Title>
+                {recent.map((p) => <ProductRow key={p.id} product={p} onClick={open} />)}
+              </section>
             </div>
-            {low.length
-              ? low.map((p) => <ProductRow key={p.id} product={p} onClick={open} />)
-              : <Typography.Text type="secondary">Nothing is running low.</Typography.Text>}
-            <Typography.Title level={5} style={{ marginTop: 18 }}>Recent inventory</Typography.Title>
-            {recent.map((p) => <ProductRow key={p.id} product={p} onClick={open} />)}
           </>
         )}
       </div>

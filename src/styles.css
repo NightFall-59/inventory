@@ -21,6 +21,10 @@ body { margin: 0; background: #fff; min-height: 100vh; min-height: 100dvh; }
 .nav button { flex: 1; background: none; border: 0; font: inherit; font-size: 10px; color: #7b8497; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .nav button .anticon { font-size: 17px; }
 .nav .on { color: #2f6bff; }
+.dashboard-header { display: flex; flex-direction: column; gap: 12px; }
+.dashboard-stats { margin-top: 12px; }
+.dashboard-panels { margin-top: 18px; }
+.dashboard-panel + .dashboard-panel { margin-top: 18px; }
 
 @media (min-width: 768px) {
   body { min-height: 100vh; min-height: 100dvh; background: #f3f5f9; display: flex; align-items: center; justify-content: center; padding: 24px; }
@@ -31,4 +35,20 @@ body { margin: 0; background: #fff; min-height: 100vh; min-height: 100dvh; }
   .nav button { flex: 0 0 auto; flex-direction: row; justify-content: flex-start; gap: 12px; padding: 12px; border-radius: 8px; font-size: 14px; }
   .nav button .anticon { font-size: 18px; }
   .nav .on { background: #eaf0ff; }
+}
+
+@media (min-width: 1024px) {
+  .screen { padding: 40px 48px; }
+  .dashboard-header { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+  .dashboard-header .ant-typography { text-align: left !important; }
+  .dashboard-header .ant-input-affix-wrapper { width: min(420px, 45%); }
+  .dashboard-stats { grid-template-columns: repeat(2, minmax(180px, 260px)); gap: 16px; margin-top: 28px; }
+  .dashboard-panels { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 20px; margin-top: 28px; }
+  .dashboard-panel { min-width: 0; padding: 20px; border: 1px solid #e4e8f0; border-radius: 12px; }
+  .dashboard-panel + .dashboard-panel { margin-top: 0; }
+  .dashboard-panel .row { margin-bottom: 8px; }
+  .dashboard-panel > .ant-typography { display: block; margin-bottom: 8px; }
+  .dashboard-search-results { max-width: 900px; }
+  .inventory-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; margin-top: 8px; }
+  .inventory-list .item { min-width: 0; }
 }

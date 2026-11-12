@@ -13,7 +13,7 @@
 4. In Supabase Auth settings, configure the site URL and allowed redirect URLs for this app, and enable email confirmations.
 5. Restart the Vite dev server after changing `.env.local`.
 
-To send a six-digit verification code, edit the Supabase Auth **Confirm signup** email template to include `{{ .Token }}` (for example: `Your verification code is {{ .Token }}`). The sign-up screen accepts that code and verifies it with Supabase. Configure a custom SMTP provider in Supabase for dependable delivery to real Gmail inboxes; never put SMTP credentials in this app. Existing browser-local accounts and saved products are not migrated.
+To send only a six-digit verification code, copy the contents of `supabase/templates/confirm_signup.html` into the Supabase Auth **Confirm signup** email template body and set its subject to `Your verification code`. Remove `{{ .ConfirmationURL }}` and any other template text or links, then save. This template file is a copyable reference; Supabase email templates are configured in the Supabase Dashboard and are not changed by deploying this app. The sign-up screen accepts the code and verifies it with Supabase. Configure a custom SMTP provider in Supabase for dependable delivery to real Gmail inboxes; never put SMTP credentials in this app. Existing browser-local accounts and saved products are not migrated.
 
 The app uses Supabase Auth and stores each user's inventory as JSON in `public.account_products`. The `get_my_products` and `save_my_products` RPC functions use the signed-in user's ID, and row-level security prevents access to other users' inventory.
 

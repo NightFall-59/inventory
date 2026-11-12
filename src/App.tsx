@@ -46,15 +46,14 @@ export default function App() {
     }
   }
 
-  const resetPassword = async (password: string) => {
+  const resetPassword = async (password: string): Promise<string | null> => {
     try {
       await updatePassword(password)
-      if (!await auth.signOut()) return false
+      if (!await auth.signOut()) return 'Password updated, but sign-out failed. Please sign out and sign in again.'
       messageApi.success('Password updated. Sign in with your new password.')
-      return true
+      return null
     } catch (error) {
-      messageApi.error(error instanceof Error ? error.message : 'Could not update your password.')
-      return false
+      return error instanceof Error ? error.message : 'Could not update your password.'
     }
   }
 

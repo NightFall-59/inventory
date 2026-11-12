@@ -3,19 +3,33 @@ import type { Navigate } from '../types'
 
 interface Props {
   go: Navigate
-  onDone: (password: string) => Promise<boolean>
+  onDone: (password: string) => Promise<string | null>
 }
 
 interface Values { password: string; confirm: string }
 
 export default function ResetPasswordScreen({ go, onDone }: Props) {
+  const [form] = Form.useForm<Values>()
+
   return (
     <div className="screen">
       <div className="auth-card">
         <Typography.Title level={4} style={{ textAlign: 'center' }}>Reset password</Typography.Title>
-        <Form<Values> layout="vertical" onFinish={async ({ password }) => {
-          if (await onDone(password)) go('login')
-        }}>
+        <Form<Values>
+          form={form}
+          layout="vertical"
+          onValuesChange={(changedValues) => {
+            if ('password' in changedValues) form.setFields([{ name: 'password', errors: [] }])
+          }}
+          onFinish={async ({ password }) => {
+            const error = await onDone(password)
+            if (error) {
+              form.setFields([{ name: 'password', errors: [error] }])
+            } else {
+              go('login')
+            }
+          }}
+        >
           <Form.Item label="Password" name="password" rules={[{ required: true, min: 8, message: 'Use at least 8 characters' }]}>
             <Input.Password />
           </Form.Item>

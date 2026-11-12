@@ -30,7 +30,7 @@ interface Props {
   onVerify: (token: string) => Promise<string | null>
   onResendCode: () => Promise<void>
   onRequestPasswordReset: (email: string) => Promise<void>
-  onResetPassword: (password: string) => Promise<boolean>
+  onResetPassword: (password: string) => Promise<string | null>
   onSignOut: () => void
   onToggleNotifications: (enabled: boolean) => void
   onAdjustStock: (id: number, delta: number) => Promise<boolean>

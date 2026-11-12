@@ -8,7 +8,7 @@ interface Props {
   mode: 'add' | 'edit'
   product?: Product
   go: Navigate
-  onSubmit: (values: ProductFormValues) => void
+  onSubmit: (values: ProductFormValues) => Promise<boolean>
 }
 
 const categoryOptions = CATEGORIES.map((value) => ({ value }))
@@ -32,7 +32,9 @@ export default function ProductFormScreen({ mode, product, go, onSubmit }: Props
         layout="vertical"
         className="form-fill"
         initialValues={editing ?? { category: CATEGORIES[0], supplier: SUPPLIERS[0] }}
-        onFinish={(values) => { onSubmit(values); back() }}
+        onFinish={async (values) => {
+          if (await onSubmit(values)) back()
+        }}
       >
         <Form.Item label="Product name" name="name" rules={[{ required: true, message: 'Enter a product name' }]}>
           <Input />

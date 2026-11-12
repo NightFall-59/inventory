@@ -3,7 +3,7 @@ import type { Navigate } from '../types'
 
 interface Props {
   go: Navigate
-  onDone: () => void
+  onDone: (password: string) => Promise<boolean>
 }
 
 interface Values { password: string; confirm: string }
@@ -13,7 +13,9 @@ export default function ResetPasswordScreen({ go, onDone }: Props) {
     <div className="screen">
       <div className="auth-card">
         <Typography.Title level={4} style={{ textAlign: 'center' }}>Reset password</Typography.Title>
-        <Form<Values> layout="vertical" onFinish={() => { onDone(); go('login') }}>
+        <Form<Values> layout="vertical" onFinish={async ({ password }) => {
+          if (await onDone(password)) go('login')
+        }}>
           <Form.Item label="Password" name="password" rules={[{ required: true, min: 6, message: 'Use at least 6 characters' }]}>
             <Input.Password />
           </Form.Item>

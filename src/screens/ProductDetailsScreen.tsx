@@ -9,7 +9,7 @@ import { peso } from '../utils'
 interface Props {
   product: Product
   go: Navigate
-  onDelete: (productId: number) => boolean
+  onDelete: (productId: number) => Promise<boolean>
 }
 
 export default function ProductDetailsScreen({ product: p, go, onDelete }: Props) {
@@ -28,8 +28,8 @@ export default function ProductDetailsScreen({ product: p, go, onDelete }: Props
               okText="Delete"
               okButtonProps={{ danger: true }}
               cancelText="Cancel"
-              onConfirm={() => {
-                if (onDelete(p.id)) go('inventory')
+              onConfirm={async () => {
+                if (await onDelete(p.id)) go('inventory')
               }}
             >
               <Button type="text" danger aria-label="Delete product" icon={<DeleteOutlined />} />

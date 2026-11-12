@@ -7,7 +7,7 @@ import type { Navigate, Product } from '../types'
 interface Props {
   product: Product
   go: Navigate
-  onConfirm: (id: number, delta: number) => void
+  onConfirm: (id: number, delta: number) => Promise<boolean>
 }
 
 type Mode = 'Add stock' | 'Remove stock'
@@ -27,7 +27,9 @@ export default function StockAdjustmentScreen({ product, go, onConfirm }: Props)
         className="form-fill"
         style={{ marginTop: 12 }}
         initialValues={{ reason: 'Restock' }}
-        onFinish={() => { onConfirm(product.id, delta); go('details', product.id) }}
+        onFinish={async () => {
+          if (await onConfirm(product.id, delta)) go('details', product.id)
+        }}
       >
         <Form.Item label={`Quantity to ${mode === 'Add stock' ? 'add' : 'remove'}`}>
           <InputNumber min={0} value={amount} onChange={(v) => setAmount(v ?? 0)} style={{ width: '100%' }} />

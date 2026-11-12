@@ -27,7 +27,7 @@ export interface UserInfo {
 }
 
 export type Screen =
-  | 'splash' | 'login' | 'signup' | 'forgot' | 'reset'
+  | 'splash' | 'login' | 'signup' | 'verify' | 'forgot' | 'reset'
   | 'dashboard' | 'inventory' | 'details' | 'adjust' | 'add' | 'edit'
   | 'reports' | 'editReport' | 'settings' | 'editInfo'
 

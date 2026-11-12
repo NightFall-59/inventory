@@ -1,100 +1,86 @@
-interface StoredAccount {
-  email: string
-  salt: string
-  passwordHash: string
+import { getSupabaseClient } from './lib/supabase'
+
+export interface AuthUser {
+  id: string
+  email: string | null
 }
 
-const ACCOUNTS_KEY = 'inventory-manager-accounts'
-const SESSION_KEY = 'inventory-manager-session'
-const PASSWORD_ITERATIONS = 120_000
+export async function getCurrentUser(): Promise<AuthUser | null> {
+  const { data, error } = await getSupabaseClient().auth.getSession()
+  if (error) throw error
+  const user = data.session?.user
+  return user ? { id: user.id, email: user.email ?? null } : null
+}
 
-function readAccounts(): StoredAccount[] {
-  const stored = localStorage.getItem(ACCOUNTS_KEY)
-  if (!stored) return []
-
-  let accounts: unknown
-  try {
-    accounts = JSON.parse(stored)
-  } catch {
-    throw new Error('Saved accounts could not be read. Clear the browser account data and try again.')
-  }
-
-  if (
-    !Array.isArray(accounts) ||
-    !accounts.every((account): account is StoredAccount =>
-      typeof account?.email === 'string' &&
-      typeof account?.salt === 'string' &&
-      typeof account?.passwordHash === 'string'
+export function subscribeToAuthChanges(
+  callback: (user: AuthUser | null, event: string) => void
+): () => void {
+  const { data } = getSupabaseClient().auth.onAuthStateChange((event, session) => {
+    callback(
+      session?.user ? { id: session.user.id, email: session.user.email ?? null } : null,
+      event
     )
-  ) {
-    throw new Error('Saved accounts are invalid. Clear the browser account data and try again.')
+  })
+  return () => data.subscription.unsubscribe()
+}
+
+export async function signIn(email: string, password: string): Promise<AuthUser | null> {
+  const { data, error } = await getSupabaseClient().auth.signInWithPassword({
+    email: email.trim().toLowerCase(),
+    password,
+  })
+  if (error) {
+    if (error.code === 'invalid_credentials') return null
+    throw error
   }
-
-  return accounts
+  return { id: data.user.id, email: data.user.email ?? null }
 }
 
-function toHex(bytes: Uint8Array): string {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
-function fromHex(hex: string): Uint8Array {
-  return Uint8Array.from(hex.match(/.{2}/g) ?? [], (byte) => Number.parseInt(byte, 16))
-}
-
-async function hashPassword(password: string, salt: Uint8Array): Promise<string> {
-  if (!globalThis.crypto?.subtle) {
-    throw new Error('Secure sign-in is unavailable in this browser.')
+export async function signUp(email: string, password: string): Promise<{ user: AuthUser; hasSession: boolean }> {
+  const { data, error } = await getSupabaseClient().auth.signUp({
+    email: email.trim().toLowerCase(),
+    password,
+  })
+  if (error) throw error
+  if (!data.user) throw new Error('Supabase did not return a user after sign-up.')
+  return {
+    user: { id: data.user.id, email: data.user.email ?? null },
+    hasSession: data.session !== null,
   }
-
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits'])
-  const saltBuffer = new ArrayBuffer(salt.byteLength)
-  new Uint8Array(saltBuffer).set(salt)
-  const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', hash: 'SHA-256', salt: saltBuffer, iterations: PASSWORD_ITERATIONS },
-    key,
-    256
-  )
-
-  return toHex(new Uint8Array(bits))
 }
 
-export async function createAccount(email: string, password: string): Promise<void> {
-  if (!globalThis.crypto?.subtle) {
-    throw new Error('Secure sign-in is unavailable in this browser.')
-  }
-
-  const normalizedEmail = email.trim().toLowerCase()
-  const accounts = readAccounts()
-  if (accounts.some((account) => account.email === normalizedEmail)) {
-    throw new Error('An account with this email already exists.')
-  }
-
-  const salt = crypto.getRandomValues(new Uint8Array(16))
-  const account: StoredAccount = {
-    email: normalizedEmail,
-    salt: toHex(salt),
-    passwordHash: await hashPassword(password, salt),
-  }
-  localStorage.setItem(ACCOUNTS_KEY, JSON.stringify([...accounts, account]))
+export async function verifySignUpCode(email: string, token: string): Promise<AuthUser> {
+  const { data, error } = await getSupabaseClient().auth.verifyOtp({
+    email: email.trim().toLowerCase(),
+    token: token.trim(),
+    type: 'signup',
+  })
+  if (error) throw error
+  if (!data.user) throw new Error('Supabase did not return a user after email verification.')
+  return { id: data.user.id, email: data.user.email ?? null }
 }
 
-export async function checkCredentials(email: string, password: string): Promise<string | null> {
-  const normalizedEmail = email.trim().toLowerCase()
-  const account = readAccounts().find((savedAccount) => savedAccount.email === normalizedEmail)
-  if (!account) return null
-
-  const passwordHash = await hashPassword(password, fromHex(account.salt))
-  return passwordHash === account.passwordHash ? normalizedEmail : null
+export async function resendSignUpCode(email: string): Promise<void> {
+  const { error } = await getSupabaseClient().auth.resend({
+    type: 'signup',
+    email: email.trim().toLowerCase(),
+  })
+  if (error) throw error
 }
 
-export function getSignedInEmail(): string | null {
-  return localStorage.getItem(SESSION_KEY)
+export async function signOut(): Promise<void> {
+  const { error } = await getSupabaseClient().auth.signOut()
+  if (error) throw error
 }
 
-export function saveSignedInEmail(email: string): void {
-  localStorage.setItem(SESSION_KEY, email)
+export async function sendPasswordReset(email: string): Promise<void> {
+  const { error } = await getSupabaseClient().auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+    redirectTo: window.location.origin,
+  })
+  if (error) throw error
 }
 
-export function clearSignedInEmail(): void {
-  localStorage.removeItem(SESSION_KEY)
+export async function updatePassword(password: string): Promise<void> {
+  const { error } = await getSupabaseClient().auth.updateUser({ password })
+  if (error) throw error
 }

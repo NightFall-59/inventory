@@ -4,7 +4,7 @@ import type { Navigate } from '../types'
 
 interface Props {
   go: Navigate
-  onDone: (email: string, password: string) => Promise<void>
+  onDone: (email: string, password: string) => Promise<string | null>
 }
 
 interface SignUpValues {
@@ -13,6 +13,8 @@ interface SignUpValues {
 }
 
 export default function SignUpScreen({ go, onDone }: Props) {
+  const [form] = Form.useForm<SignUpValues>()
+
   return (
     <div className="screen" style={{ position: 'relative' }}>
       <Button
@@ -37,7 +39,17 @@ export default function SignUpScreen({ go, onDone }: Props) {
       />
       <div className="auth-card">
         <Typography.Title level={4} style={{ textAlign: 'center' }}>Sign up</Typography.Title>
-        <Form<SignUpValues> layout="vertical" onFinish={({ email, password }) => onDone(email, password)}>
+        <Form<SignUpValues>
+          form={form}
+          layout="vertical"
+          onValuesChange={(changedValues) => {
+            if ('password' in changedValues) form.setFields([{ name: 'password', errors: [] }])
+          }}
+          onFinish={async ({ email, password }) => {
+            const error = await onDone(email, password)
+            if (error) form.setFields([{ name: 'password', errors: [error] }])
+          }}
+        >
           <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email', message: 'Enter a valid email' }]}>
             <Input />
           </Form.Item>

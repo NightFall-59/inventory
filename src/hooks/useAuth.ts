@@ -115,7 +115,7 @@ export default function useAuth({ messageApi, setScreen, setProducts, setUser }:
     }
   }
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string): Promise<string | null> => {
     try {
       const result = await register(email, password)
       if (result.hasSession) {
@@ -124,14 +124,18 @@ export default function useAuth({ messageApi, setScreen, setProducts, setUser }:
         setAccount(accountEmail, accountProducts)
         setScreen('dashboard')
         messageApi.success('Account created')
+        return null
       } else {
         const accountEmail = result.user.email ?? email.trim().toLowerCase()
         setPendingSignUpEmail(accountEmail)
         setScreen('verify')
         messageApi.success('We sent a verification code to your email.')
+        return null
       }
     } catch (error) {
+      if (error instanceof Error && /password/i.test(error.message)) return error.message
       messageApi.error(error instanceof Error ? error.message : 'Could not create the account. Please try again.')
+      return null
     }
   }
 

@@ -160,11 +160,11 @@ export default function App() {
     }
   }
 
-  const verifySignUp = async (token: string) => {
+  const verifySignUp = async (token: string): Promise<string | null> => {
     if (!pendingSignUpEmail) {
       messageApi.error('Start sign-up again to request a verification code.')
       setScreen('signup')
-      return
+      return null
     }
 
     try {
@@ -177,8 +177,9 @@ export default function App() {
       setUser((currentUser) => ({ ...currentUser, name: accountEmail.split('@')[0] }))
       setScreen('dashboard')
       messageApi.success('Email verified. You are signed in.')
+      return null
     } catch (error) {
-      messageApi.error(error instanceof Error ? error.message : 'Could not verify the email code.')
+      return error instanceof Error ? error.message : 'Could not verify the email code.'
     }
   }
 

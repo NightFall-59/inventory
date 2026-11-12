@@ -41,7 +41,7 @@ export default function SignUpScreen({ go, onDone }: Props) {
           <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email', message: 'Enter a valid email' }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="Password" name="password" rules={[{ required: true, min: 6, message: 'Use at least 6 characters' }]}>
+          <Form.Item label="Password" name="password" rules={[{ required: true, min: 8, message: 'Use at least 8 characters' }]}>
             <Input.Password />
           </Form.Item>
           <Button type="primary" htmlType="submit" block size="large">Sign up</Button>

@@ -16,7 +16,7 @@ export default function ResetPasswordScreen({ go, onDone }: Props) {
         <Form<Values> layout="vertical" onFinish={async ({ password }) => {
           if (await onDone(password)) go('login')
         }}>
-          <Form.Item label="Password" name="password" rules={[{ required: true, min: 6, message: 'Use at least 6 characters' }]}>
+          <Form.Item label="Password" name="password" rules={[{ required: true, min: 8, message: 'Use at least 8 characters' }]}>
             <Input.Password />
           </Form.Item>
           <Form.Item

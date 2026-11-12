@@ -1,5 +1,8 @@
 import type { Product } from './types'
 
+export const PASSWORD_POLICY_MESSAGE =
+  'Password should contain at least one character of each: a-z, A-Z, numbers, symbols.'
+
 export const peso = (n: number): string =>
   '₱' + n.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 

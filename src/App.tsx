@@ -7,6 +7,7 @@ import useAuth from './hooks/useAuth'
 import useInventory from './hooks/useInventory'
 import { INITIAL_REPORT, INITIAL_USER } from './data/products'
 import type { Navigate, Report, Screen, UserInfo } from './types'
+import { PASSWORD_POLICY_MESSAGE } from './utils'
 
 const protectedScreens: Screen[] = [
   'dashboard', 'inventory', 'details', 'adjust', 'add', 'edit',
@@ -53,6 +54,7 @@ export default function App() {
       messageApi.success('Password updated. Sign in with your new password.')
       return null
     } catch (error) {
+      if (error instanceof Error && /password/i.test(error.message)) return PASSWORD_POLICY_MESSAGE
       return error instanceof Error ? error.message : 'Could not update your password.'
     }
   }

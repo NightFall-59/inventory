@@ -11,6 +11,7 @@ import {
 import { INITIAL_PRODUCTS } from '../data/products'
 import { loadAccountProducts } from '../data/accountProducts'
 import type { Product, Screen, UserInfo } from '../types'
+import { PASSWORD_POLICY_MESSAGE } from '../utils'
 
 interface MessageApi {
   success(content: string): void
@@ -133,7 +134,7 @@ export default function useAuth({ messageApi, setScreen, setProducts, setUser }:
         return null
       }
     } catch (error) {
-      if (error instanceof Error && /password/i.test(error.message)) return error.message
+      if (error instanceof Error && /password/i.test(error.message)) return PASSWORD_POLICY_MESSAGE
       messageApi.error(error instanceof Error ? error.message : 'Could not create the account. Please try again.')
       return null
     }

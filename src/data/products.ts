@@ -1,4 +1,4 @@
-import type { Product, Report, UserInfo } from '../types'
+import type { Product, UserInfo } from '../types'
 
 const supplier = 'Santos Wholesale Trading'
 
@@ -13,5 +13,4 @@ export const INITIAL_PRODUCTS: Product[] = [
 export const CATEGORIES = ['Canned goods', 'Drinks', 'Noodles', 'Condiments', 'Snacks']
 export const SUPPLIERS = [supplier]
 
-export const INITIAL_REPORT: Report = { value: 18720, units: 440 }
 export const INITIAL_USER: UserInfo = { name: 'R&K', store: 'Sunrise Marketing', location: 'Kidapawan City' }

@@ -5,18 +5,17 @@ import AppRoutes from './AppRoutes'
 import PhoneFrame from './components/PhoneFrame'
 import useAuth from './hooks/useAuth'
 import useInventory from './hooks/useInventory'
-import { INITIAL_REPORT, INITIAL_USER } from './data/products'
-import type { Navigate, Report, Screen, UserInfo } from './types'
+import { INITIAL_USER } from './data/products'
+import type { Navigate, Screen, UserInfo } from './types'
 import { PASSWORD_POLICY_MESSAGE } from './utils'
 
 const protectedScreens: Screen[] = [
   'dashboard', 'inventory', 'details', 'adjust', 'add', 'edit',
-  'reports', 'editReport', 'settings', 'editInfo',
+  'reports', 'settings', 'editInfo',
 ]
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('splash')
-  const [report, setReport] = useState<Report>(INITIAL_REPORT)
   const [user, setUser] = useState<UserInfo>(INITIAL_USER)
   const [notifications, setNotifications] = useState(true)
   const [messageApi, contextHolder] = message.useMessage()
@@ -69,7 +68,6 @@ export default function App() {
         pendingSignUpEmail={auth.pendingSignUpEmail}
         products={inventory.products}
         selectedProduct={inventory.products.find((product) => product.id === inventory.selectedId)}
-        report={report}
         user={user}
         notifications={notifications}
         onSignIn={auth.signIn}
@@ -84,10 +82,6 @@ export default function App() {
         onAddProduct={(values) => inventory.addProduct(auth.signedInEmail, values)}
         onSaveProduct={(values) => inventory.saveProduct(auth.signedInEmail, values)}
         onDeleteProduct={(id) => inventory.deleteProduct(auth.signedInEmail, id)}
-        onSaveReport={(nextReport) => {
-          setReport(nextReport)
-          messageApi.success('Report saved')
-        }}
         onSaveUser={(nextUser) => {
           setUser(nextUser)
           messageApi.success('Information saved')

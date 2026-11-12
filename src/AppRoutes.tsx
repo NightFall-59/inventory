@@ -1,4 +1,4 @@
-import type { Navigate, Product, ProductFormValues, Report, Screen, UserInfo } from './types'
+import type { Navigate, Product, ProductFormValues, Screen, UserInfo } from './types'
 import SplashScreen from './screens/SplashScreen'
 import LoginScreen from './screens/LoginScreen'
 import SignUpScreen from './screens/SignUpScreen'
@@ -11,7 +11,6 @@ import ProductDetailsScreen from './screens/ProductDetailsScreen'
 import StockAdjustmentScreen from './screens/StockAdjustmentScreen'
 import ProductFormScreen from './screens/ProductFormScreen'
 import ReportsScreen from './screens/ReportsScreen'
-import EditReportScreen from './screens/EditReportScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import EditInformationScreen from './screens/EditInformationScreen'
 
@@ -22,7 +21,6 @@ interface Props {
   pendingSignUpEmail: string | null
   products: Product[]
   selectedProduct?: Product
-  report: Report
   user: UserInfo
   notifications: boolean
   onSignIn: (email: string, password: string) => Promise<'signedIn' | 'invalid' | 'error'>
@@ -37,15 +35,14 @@ interface Props {
   onAddProduct: (values: ProductFormValues) => Promise<boolean>
   onSaveProduct: (values: ProductFormValues) => Promise<boolean>
   onDeleteProduct: (id: number) => Promise<boolean>
-  onSaveReport: (report: Report) => void
   onSaveUser: (user: UserInfo) => void
 }
 
 export default function AppRoutes(props: Props) {
   const {
-    screen, go, signedInEmail, pendingSignUpEmail, products, selectedProduct, report, user, notifications,
+    screen, go, signedInEmail, pendingSignUpEmail, products, selectedProduct, user, notifications,
     onSignIn, onSignUp, onVerify, onResendCode, onRequestPasswordReset, onResetPassword, onSignOut,
-    onToggleNotifications, onAdjustStock, onAddProduct, onSaveProduct, onDeleteProduct, onSaveReport, onSaveUser,
+    onToggleNotifications, onAdjustStock, onAddProduct, onSaveProduct, onDeleteProduct, onSaveUser,
   } = props
 
   switch (screen) {
@@ -61,8 +58,7 @@ export default function AppRoutes(props: Props) {
     case 'dashboard': return <DashboardScreen products={products} go={go} />
     case 'inventory': return <InventoryScreen products={products} go={go} />
     case 'add': return <ProductFormScreen mode="add" go={go} onSubmit={onAddProduct} />
-    case 'reports': return <ReportsScreen report={report} products={products} go={go} />
-    case 'editReport': return <EditReportScreen report={report} go={go} onSave={onSaveReport} />
+    case 'reports': return <ReportsScreen products={products} go={go} />
     case 'settings':
       return (
         <SettingsScreen

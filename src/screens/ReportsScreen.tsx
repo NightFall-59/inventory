@@ -1,32 +1,50 @@
-import { Button, Select, Typography } from 'antd'
+import { Typography } from 'antd'
 import BottomNav from '../components/BottomNav'
 import StatCard from '../components/StatCard'
-import type { Navigate, Product, Report } from '../types'
+import type { Navigate, Product } from '../types'
 import { peso } from '../utils'
 
 interface Props {
-  report: Report
   products: Product[]
   go: Navigate
 }
 
-const RANGES = ['Sep 30 – Oct 6, 2026', 'Sep 23 – Sep 29, 2026', 'Sep 16 – Sep 22, 2026'].map((value) => ({ value }))
-
-export default function ReportsScreen({ report, products, go }: Props) {
+export default function ReportsScreen({ products, go }: Props) {
   const units = products.reduce((sum, p) => sum + p.qty, 0)
+  const costValue = products.reduce((sum, p) => sum + p.cost * p.qty, 0)
+  const retailValue = products.reduce((sum, p) => sum + p.price * p.qty, 0)
 
   return (
     <>
       <div className="screen">
-        <Typography.Title level={4} style={{ textAlign: 'center' }}>Reports</Typography.Title>
-        <Select defaultValue={RANGES[0].value} options={RANGES} style={{ width: '100%', marginBottom: 12 }} />
+        <div className="row report-heading">
+          <Typography.Title level={4} style={{ margin: 0 }}>Inventory value</Typography.Title>
+          <span className="live-badge"><span />Live</span>
+        </div>
+        <Typography.Text type="secondary" className="report-description">
+          Calculated from current stock and unit prices. Updates automatically when inventory changes.
+        </Typography.Text>
         <div className="grid2">
-          <StatCard outlined label="Inventory value" value={peso(report.value)} note={`${products.length} stock · ${units.toLocaleString()} units`} />
-          <StatCard outlined label="Units sold" value={report.units} note="↑ 12% vs. last week" />
+          <StatCard outlined label="Inventory at cost" value={peso(costValue)} note={`${products.length} products · ${units.toLocaleString()} units`} />
+          <StatCard outlined label="Potential retail value" value={peso(retailValue)} note="If all current stock is sold" />
         </div>
-        <div className="pinned">
-          <Button block size="large" onClick={() => go('editReport')}>Edit report</Button>
-        </div>
+        <section className="report-feed">
+          <Typography.Title level={5} style={{ margin: 0 }}>Value by product</Typography.Title>
+          {products.length ? products.map((product) => (
+            <div className="report-product" key={product.id}>
+              <div className="ico">{product.icon}</div>
+              <div className="grow">
+                <Typography.Text strong>{product.name}</Typography.Text>
+                <div className="report-product-detail">
+                  {product.qty.toLocaleString()} units × {peso(product.cost)} cost
+                </div>
+              </div>
+              <Typography.Text strong>{peso(product.cost * product.qty)}</Typography.Text>
+            </div>
+          )) : (
+            <Typography.Text type="secondary">Add products to see your inventory value.</Typography.Text>
+          )}
+        </section>
       </div>
       <BottomNav active="reports" go={go} />
     </>

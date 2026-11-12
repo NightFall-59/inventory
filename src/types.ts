@@ -15,11 +15,6 @@ export interface Product {
 
 export type ProductFormValues = Partial<Omit<Product, 'id' | 'icon'>> & { name: string }
 
-export interface Report {
-  value: number
-  units: number
-}
-
 export interface UserInfo {
   name: string
   store: string
@@ -29,7 +24,7 @@ export interface UserInfo {
 export type Screen =
   | 'splash' | 'login' | 'signup' | 'verify' | 'forgot' | 'reset'
   | 'dashboard' | 'inventory' | 'details' | 'adjust' | 'add' | 'edit'
-  | 'reports' | 'editReport' | 'settings' | 'editInfo'
+  | 'reports' | 'settings' | 'editInfo'
 
 export type Navigate = (screen: Screen, productId?: number) => void
 export type TabKey = 'dashboard' | 'inventory' | 'reports' | 'settings'

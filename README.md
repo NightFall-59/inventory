@@ -13,8 +13,6 @@
 4. In Supabase Auth settings, configure the site URL and allowed redirect URLs for this app, and enable email confirmations.
 5. Restart the Vite dev server after changing `.env.local`.
 
-Set the Supabase email provider's minimum password length to 8 and its password requirements to include lowercase letters, uppercase letters, and symbols; do not require digits if you want passwords without numbers. The sign-up and reset forms validate the same policy and display errors below the password field.
-
 To send a verification code, copy the contents of `supabase/templates/confirm_signup.html` into the Supabase Auth **Confirm signup** email template body and set its subject to `Your verification code`. Remove `{{ .ConfirmationURL }}` and any other template text or links, then save. This template file is a copyable reference; Supabase email templates are configured in the Supabase Dashboard and are not changed by deploying this app. The sign-up screen accepts 6- or 8-digit codes and verifies them with Supabase. Configure a custom SMTP provider in Supabase for dependable delivery to real Gmail inboxes; never put SMTP credentials in this app. Existing browser-local accounts and saved products are not migrated.
 
 The app uses Supabase Auth and stores each user's inventory as JSON in `public.account_products`. The `get_my_products` and `save_my_products` RPC functions use the signed-in user's ID, and row-level security prevents access to other users' inventory.

@@ -26,7 +26,7 @@ interface Props {
   user: UserInfo
   notifications: boolean
   onSignIn: (email: string, password: string) => Promise<'signedIn' | 'invalid' | 'error'>
-  onSignUp: (email: string, password: string) => Promise<string | null>
+  onSignUp: (email: string, password: string) => Promise<void>
   onVerify: (token: string) => Promise<string | null>
   onResendCode: () => Promise<void>
   onRequestPasswordReset: (email: string) => Promise<void>

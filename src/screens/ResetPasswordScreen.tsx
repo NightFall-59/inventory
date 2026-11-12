@@ -1,6 +1,5 @@
 import { Button, Form, Input, Typography } from 'antd'
 import type { Navigate } from '../types'
-import { passwordPolicyError } from '../utils'
 
 interface Props {
   go: Navigate
@@ -31,19 +30,7 @@ export default function ResetPasswordScreen({ go, onDone }: Props) {
             }
           }}
         >
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-              { required: true, message: 'Enter a password' },
-              {
-                validator: (_, value: string) => {
-                  const error = value ? passwordPolicyError(value) : null
-                  return error ? Promise.reject(new Error(error)) : Promise.resolve()
-                },
-              },
-            ]}
-          >
+          <Form.Item label="Password" name="password" rules={[{ required: true, min: 8, message: 'Use at least 8 characters' }]}>
             <Input.Password />
           </Form.Item>
           <Form.Item
